@@ -18,10 +18,7 @@ class LocalNotification with LocalNotificationListener {
   /// Representing the body of the notification.
   String? body;
 
-  /// Representing the audio ringtone.
-  String? audioPath;
-
-  /// Representing the image.
+  /// Representing the Image of the notification.
   String? imagePath;
 
   /// Representing whether the notification is silent.
@@ -39,11 +36,10 @@ class LocalNotification with LocalNotificationListener {
     String? identifier,
     required this.title,
     this.subtitle,
-    this.audioPath,
-    this.imagePath,
     this.body,
     this.silent = false,
     this.actions,
+    this.imagePath
   }) {
     if (identifier != null) {
       this.identifier = identifier;
@@ -63,9 +59,8 @@ class LocalNotification with LocalNotificationListener {
     return LocalNotification(
       identifier: json['identifier'],
       title: json['title'],
-      subtitle: json['subtitle'],
-      audioPath: json['audioPath'],
       imagePath: json['imagePath'],
+      subtitle: json['subtitle'],
       body: json['body'],
       silent: json['silent'],
       actions: actions,
@@ -77,13 +72,11 @@ class LocalNotification with LocalNotificationListener {
       'identifier': identifier,
       'title': title,
       'subtitle': subtitle ?? '',
-      'audioPath': audioPath ?? '',
-      'imagePath': imagePath ?? '',
       'body': body ?? '',
       'silent': silent,
+      'imagePath': imagePath ?? '',
       'actions': (actions ?? []).map((e) => e.toJson()).toList(),
-    }
-      ..removeWhere((key, value) => value == null);
+    }..removeWhere((key, value) => value == null);
   }
 
   /// Immediately shows the notification to the user
@@ -97,7 +90,7 @@ class LocalNotification with LocalNotificationListener {
   }
 
   /// Destroys the notification immediately.
-  Future<void> destory() {
+  Future<void> destroy() {
     return localNotifier.destroy(this);
   }
 
@@ -110,8 +103,10 @@ class LocalNotification with LocalNotificationListener {
   }
 
   @override
-  void onLocalNotificationClose(LocalNotification notification,
-      LocalNotificationCloseReason closeReason,) {
+  void onLocalNotificationClose(
+    LocalNotification notification,
+    LocalNotificationCloseReason closeReason,
+  ) {
     if (identifier != notification.identifier || onClose == null) {
       return;
     }
@@ -127,8 +122,10 @@ class LocalNotification with LocalNotificationListener {
   }
 
   @override
-  void onLocalNotificationClickAction(LocalNotification notification,
-      int actionIndex,) {
+  void onLocalNotificationClickAction(
+    LocalNotification notification,
+    int actionIndex,
+  ) {
     if (identifier != notification.identifier || onClickAction == null) {
       return;
     }

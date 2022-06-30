@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'local_notification_close_reason.dart';
 import 'local_notification_listener.dart';
 import 'local_notification.dart';
-import 'shortcut_policy.dart';
 
 class LocalNotifier {
   LocalNotifier._() {
@@ -22,8 +21,9 @@ class LocalNotifier {
   final ObserverList<LocalNotificationListener> _listeners =
       ObserverList<LocalNotificationListener>();
 
-  bool _isInitialized = false;
   String? _appName;
+  String? _appId;
+
   Map<String, LocalNotification> _notifications = {};
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -79,27 +79,19 @@ class LocalNotifier {
     _listeners.remove(listener);
   }
 
-  Future<void> setup({
-    required String appName,
-    ShortcutPolicy shortcutPolicy = ShortcutPolicy.requireCreate,
-  }) async {
-    final Map<String, dynamic> arguments = {
-      'appName': appName,
-      'shortcutPolicy': describeEnum(shortcutPolicy),
-    };
-    if (Platform.isWindows) {
-      _isInitialized = await _channel.invokeMethod('setup', arguments);
-    } else {
-      _isInitialized = true;
-    }
+  void setAppName(String appName) {
     _appName = appName;
+  }
+
+  void setAppId(String appId){
+    _appId = appId;
   }
 
   /// Immediately shows the notification to the user.
   Future<void> notify(LocalNotification notification) async {
-    if ((Platform.isLinux || Platform.isWindows) && !_isInitialized) {
+    if ((Platform.isLinux || Platform.isWindows) && _appName == null) {
       throw Exception(
-        'Not initialized, please call `localNotifier.setup` first to initialize',
+        'Missing appName, must call `localNotifier.setAppName` to set.',
       );
     }
 
@@ -107,6 +99,7 @@ class LocalNotifier {
 
     final Map<String, dynamic> arguments = notification.toJson();
     arguments['appName'] = _appName;
+    arguments['appId'] = _appId;
     await _channel.invokeMethod('notify', arguments);
   }
 

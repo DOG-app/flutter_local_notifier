@@ -565,7 +565,7 @@ HRESULT	WinToast::validateShellLinkHelper(_Out_ bool& wasChanged) {
                                 // AUMI Changed for the same app, let's update the current value! =)
                                 wasChanged = true;
                                 PropVariantClear(&appIdPropVar);
-                                hr = InitPropVariantFromString(_aumi.c_str(), &appIdPropVar);
+                                hr = InitPropVariantFromString(_appName.c_str(), &appIdPropVar);
                                 if (SUCCEEDED(hr)) {
                                     hr = propertyStore->SetValue(PKEY_AppUserModel_ID, appIdPropVar);
                                     if (SUCCEEDED(hr)) {
@@ -613,7 +613,7 @@ HRESULT	WinToast::createShellLinkHelper() {
                     hr = shellLink.As(&propertyStore);
                     if (SUCCEEDED(hr)) {
                         PROPVARIANT appIdPropVar;
-                        hr = InitPropVariantFromString(_aumi.c_str(), &appIdPropVar);
+                        hr = InitPropVariantFromString(_appName.c_str(), &appIdPropVar);
                         if (SUCCEEDED(hr)) {
                             hr = propertyStore->SetValue(PKEY_AppUserModel_ID, appIdPropVar);
                             if (SUCCEEDED(hr)) {
